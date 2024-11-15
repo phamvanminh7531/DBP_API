@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dual Image Upload Demo</title>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .upload-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .preview {
+            margin-top: 20px;
+            max-width: 300px;
+            max-height: 300px;
+        }
+        .loading {
+            display: none;
+            color: #666;
+            margin-top: 10px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+        .submit-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 20px 0;
+            font-size: 16px;
+            width: 100%;
+        }
+        .submit-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .error-message {
+            color: #ff0000;
+            margin-top: 10px;
+            display: none;
+        }
+        .result-section {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            display: none;
+        }
+        .image-grid {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .image-container {
+            flex: 1;
+            min-width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dual Image Upload Demo</h1>
+
+        <!-- First Image Upload Section -->
+        <div class="upload-section">
+            <h2>Image 1</h2>
+            <input type="file" id="imageInput1" accept="image/*">
+            <div id="preview1" class="preview"></div>
+            <div id="error1" class="error-message"></div>
+        </div>
+
+        <!-- Second Image Upload Section -->
+        <div class="upload-section">
+            <h2>Image 2</h2>
+            <input type="file" id="imageInput2" accept="image/*">
+            <div id="preview2" class="preview"></div>
+            <div id="error2" class="error-message"></div>
+        </div>
+
+        <!-- Submit Button for Both Images -->
+        <button onclick="uploadImages()" id="submitButton" class="submit-button" disabled>
+            Process Images
+        </button>
+        <div id="mainLoading" class="loading">Processing both images...</div>
+        <div id="mainError" class="error-message"></div>
+
+        <!-- Results Section -->
+        <div id="resultSection" class="result-section">
+            <h2>Processing Results</h2>
+            <div class="image-grid">
+                <div class="image-container">
+                    <h3>Result 2</h3>
+                    <div id="result" class="preview"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedFiles = {
+            image1: null,
+            image2: null
+        };
+
+        function updateSubmitButton() {
+            const submitButton = document.getElementById('submitButton');
+            submitButton.disabled = !(selectedFiles.image1 && selectedFiles.image2);
+        }
+
+        function setupImagePreview(inputNumber) {
+            const fileInput = document.getElementById(`imageInput${inputNumber}`);
+            const errorDiv = document.getElementById(`error${inputNumber}`);
+
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                const previewDiv = document.getElementById(`preview${inputNumber}`);
+                errorDiv.style.display = 'none';
+                
+                if (file) {
+                    // Validate file type
+                    if (!file.type.startsWith('image/')) {
+                        errorDiv.textContent = 'Please select an image file';
+                        errorDiv.style.display = 'block';
+                        fileInput.value = '';
+                        selectedFiles[`image${inputNumber}`] = null;
+                        updateSubmitButton();
+                        return;
+                    }
+
+                    // Validate file size (max 5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        errorDiv.textContent = 'Image size should be less than 5MB';
+                        errorDiv.style.display = 'block';
+                        fileInput.value = '';
+                        selectedFiles[`image${inputNumber}`] = null;
+                        updateSubmitButton();
+                        return;
+                    }
+
+                    selectedFiles[`image${inputNumber}`] = file;
+                    updateSubmitButton();
+
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewDiv.innerHTML = `<img src="${e.target.result}" alt="Preview ${inputNumber}">`;
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    selectedFiles[`image${inputNumber}`] = null;
+                    updateSubmitButton();
+                    previewDiv.innerHTML = '';
+                }
+            });
+        }
+
+        async function uploadImages() {
+            const mainLoading = document.getElementById('mainLoading');
+            const mainError = document.getElementById('mainError');
+            const submitButton = document.getElementById('submitButton');
+            const resultSection = document.getElementById('resultSection');
+            const resultDiv = document.getElementById('result');
+
+            // Hide previous result if any
+            resultDiv.innerHTML = '';
+            resultSection.style.display = 'none';
+
+            mainLoading.style.display = 'block';
+            mainError.style.display = 'none';
+            submitButton.disabled = true;
+
+            try {
+                const formData = new FormData();
+                formData.append('img_3d_input', selectedFiles.image1);
+                formData.append('img_style_input', selectedFiles.image2);
+
+                // Replace 'YOUR_API_ENDPOINT' with your actual API endpoint
+                const response = await fetch('http://127.0.0.1:8000/api/', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // Display results
+                resultSection.style.display = 'block';
+
+                console.log(data.image_data);
+
+                // Update result images - adjust according to your API response structure
+                resultDiv.innerHTML = `<img src="" alt="Result 2">`;
+                resultDiv.innerHTML = `<img src="data:image/jpeg;base64,${data.image_data}" alt="Result 2">`;
+
+            } catch (error) {
+                console.error('Error:', error);
+                mainError.textContent = 'An error occurred while processing the images. Please try again.';
+                mainError.style.display = 'block';
+            } finally {
+                mainLoading.style.display = 'none';
+                submitButton.disabled = false;
+            }
+        }
+
+        // Setup preview for both inputs
+        setupImagePreview(1);
+        setupImagePreview(2);
+    </script>
+</body>
+</html>
