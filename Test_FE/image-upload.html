@@ -74,7 +74,6 @@
     <div class="container">
         <h1>Dual Image Upload Demo</h1>
 
-        <!-- First Image Upload Section -->
         <div class="upload-section">
             <h2>Image 1</h2>
             <input type="file" id="imageInput1" accept="image/*">
@@ -82,7 +81,6 @@
             <div id="error1" class="error-message"></div>
         </div>
 
-        <!-- Second Image Upload Section -->
         <div class="upload-section">
             <h2>Image 2</h2>
             <input type="file" id="imageInput2" accept="image/*">
@@ -90,19 +88,17 @@
             <div id="error2" class="error-message"></div>
         </div>
 
-        <!-- Submit Button for Both Images -->
         <button onclick="uploadImages()" id="submitButton" class="submit-button" disabled>
             Process Images
         </button>
         <div id="mainLoading" class="loading">Processing both images...</div>
         <div id="mainError" class="error-message"></div>
 
-        <!-- Results Section -->
         <div id="resultSection" class="result-section">
             <h2>Processing Results</h2>
             <div class="image-grid">
                 <div class="image-container">
-                    <h3>Result 2</h3>
+                    <h3>Result Image</h3>
                     <div id="result" class="preview"></div>
                 </div>
             </div>
@@ -130,7 +126,6 @@
                 errorDiv.style.display = 'none';
                 
                 if (file) {
-                    // Validate file type
                     if (!file.type.startsWith('image/')) {
                         errorDiv.textContent = 'Please select an image file';
                         errorDiv.style.display = 'block';
@@ -140,7 +135,6 @@
                         return;
                     }
 
-                    // Validate file size (max 5MB)
                     if (file.size > 5 * 1024 * 1024) {
                         errorDiv.textContent = 'Image size should be less than 5MB';
                         errorDiv.style.display = 'block';
@@ -173,10 +167,11 @@
             const resultSection = document.getElementById('resultSection');
             const resultDiv = document.getElementById('result');
 
-            // Hide previous result if any
-            resultDiv.innerHTML = '';
+            // Clear previous result and hide result section
             resultSection.style.display = 'none';
+            resultDiv.innerHTML = '';
 
+            // Show loading state
             mainLoading.style.display = 'block';
             mainError.style.display = 'none';
             submitButton.disabled = true;
@@ -186,7 +181,6 @@
                 formData.append('img_3d_input', selectedFiles.image1);
                 formData.append('img_style_input', selectedFiles.image2);
 
-                // Replace 'YOUR_API_ENDPOINT' with your actual API endpoint
                 const response = await fetch('http://127.0.0.1:8000/api/', {
                     method: 'POST',
                     body: formData
@@ -197,15 +191,10 @@
                 }
 
                 const data = await response.json();
-
-                // Display results
+                
+                // Update result image and show result section
+                resultDiv.innerHTML = `<img src="data:image/jpeg;base64,${data.image_data}" alt="${new Date().getTime()}">`;
                 resultSection.style.display = 'block';
-
-                console.log(data.image_data);
-
-                // Update result images - adjust according to your API response structure
-                resultDiv.innerHTML = `<img src="" alt="Result 2">`;
-                resultDiv.innerHTML = `<img src="data:image/jpeg;base64,${data.image_data}" alt="Result 2">`;
 
             } catch (error) {
                 console.error('Error:', error);
@@ -217,7 +206,6 @@
             }
         }
 
-        // Setup preview for both inputs
         setupImagePreview(1);
         setupImagePreview(2);
     </script>
