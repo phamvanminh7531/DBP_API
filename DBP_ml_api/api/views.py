@@ -10,22 +10,22 @@ import io
 from PIL import Image
 import base64
 from django.conf import settings
-import os
-
-
-
-
+import uuid
 
 class IMG2IMG(APIView):
     parser_classes = (MultiPartParser, FormParser)
     def post(self, request):
         serializer = TWO_IMG2IMGSerializers(data=request.data)
         if serializer.is_valid():
+            client_id = str(uuid.uuid4())
             image_instance = serializer.save()
             img_3d_input_path = image_instance.img_3d_input.url
             img_style_input_path = image_instance.img_style_input.url
-            result = get_IMG2IMG_result(img_3d_input_path=f'{settings.BASE_DIR}/{img_3d_input_path}', img_style_input_path=f'{settings.BASE_DIR}/{img_style_input_path}')
-            print(result)
+            
+            result = get_IMG2IMG_result(img_3d_input_path=f'{settings.BASE_DIR}/{img_3d_input_path}', 
+                                        img_style_input_path=f'{settings.BASE_DIR}/{img_style_input_path}', 
+                                        client_id=client_id)
+            # print(result)
             image = Image.open(io.BytesIO(result))
             img_io = BytesIO()
             image.save(img_io, 'PNG')  # You can save in another format if needed

@@ -1,0 +1,1164 @@
+{
+  "169": {
+    "inputs": {
+      "chatglm3_checkpoint": "chatglm3-fp16.safetensors"
+    },
+    "class_type": "MZ_ChatGLM3Loader",
+    "_meta": {
+      "title": "MinusZone - ChatGLM3Loader"
+    }
+  },
+  "170": {
+    "inputs": {
+      "text": [
+        "497",
+        0
+      ],
+      "width": [
+        "192",
+        3
+      ],
+      "height": [
+        "192",
+        4
+      ],
+      "crop_w": 0,
+      "crop_h": 0,
+      "target_width": [
+        "192",
+        3
+      ],
+      "target_height": [
+        "192",
+        4
+      ],
+      "speak_and_recognation": true,
+      "chatglm3_model": [
+        "169",
+        0
+      ]
+    },
+    "class_type": "MZ_ChatGLM3_Advance_V2",
+    "_meta": {
+      "title": "MinusZone - ChatGLM3TextEncodeAdvanceV2"
+    }
+  },
+  "171": {
+    "inputs": {
+      "text": [
+        "498",
+        0
+      ],
+      "speak_and_recognation": true,
+      "chatglm3_model": [
+        "169",
+        0
+      ]
+    },
+    "class_type": "MZ_ChatGLM3_V2",
+    "_meta": {
+      "title": "MinusZone - ChatGLM3TextEncodeV2"
+    }
+  },
+  "172": {
+    "inputs": {
+      "noise": [
+        "173",
+        0
+      ],
+      "guider": [
+        "174",
+        0
+      ],
+      "sampler": [
+        "176",
+        0
+      ],
+      "sigmas": [
+        "177",
+        0
+      ],
+      "latent_image": [
+        "178",
+        0
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced",
+    "_meta": {
+      "title": "SamplerCustomAdvanced"
+    }
+  },
+  "173": {
+    "inputs": {
+      "noise_seed": 512195022535732
+    },
+    "class_type": "RandomNoise",
+    "_meta": {
+      "title": "RandomNoise"
+    }
+  },
+  "174": {
+    "inputs": {
+      "cfg": 5,
+      "model": [
+        "205",
+        0
+      ],
+      "positive": [
+        "198",
+        0
+      ],
+      "negative": [
+        "198",
+        1
+      ]
+    },
+    "class_type": "CFGGuider",
+    "_meta": {
+      "title": "CFGGuider"
+    }
+  },
+  "175": {
+    "inputs": {
+      "unet_name": "OpenkolorV13.safetensors"
+    },
+    "class_type": "MZ_KolorsUNETLoaderV2",
+    "_meta": {
+      "title": "MinusZone - KolorsUNETLoaderV2"
+    }
+  },
+  "176": {
+    "inputs": {
+      "sampler_name": "dpm_2_ancestral"
+    },
+    "class_type": "KSamplerSelect",
+    "_meta": {
+      "title": "KSamplerSelect"
+    }
+  },
+  "177": {
+    "inputs": {
+      "model_type": "SDXL",
+      "steps": 20,
+      "denoise": 1
+    },
+    "class_type": "AlignYourStepsScheduler",
+    "_meta": {
+      "title": "AlignYourStepsScheduler"
+    }
+  },
+  "178": {
+    "inputs": {
+      "width": [
+        "291",
+        0
+      ],
+      "height": [
+        "292",
+        0
+      ],
+      "batch_size": 1
+    },
+    "class_type": "EmptyLatentImage",
+    "_meta": {
+      "title": "Empty Latent Image"
+    }
+  },
+  "179": {
+    "inputs": {
+      "samples": [
+        "172",
+        0
+      ],
+      "vae": [
+        "180",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "180": {
+    "inputs": {
+      "vae_name": "kolorsVAE_fp32Safetensors.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "181": {
+    "inputs": {
+      "filename_prefix": "15.11/ATung/1",
+      "images": [
+        "179",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "182": {
+    "inputs": {
+      "lora_name": "kolors-flux-2000.safetensors",
+      "strength_model": 0.78,
+      "model": [
+        "175",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "LoraLoaderModelOnly"
+    }
+  },
+  "183": {
+    "inputs": {
+      "scale": 3,
+      "model": [
+        "182",
+        0
+      ]
+    },
+    "class_type": "PerturbedAttentionGuidance",
+    "_meta": {
+      "title": "PerturbedAttentionGuidance"
+    }
+  },
+  "184": {
+    "inputs": {
+      "hard_mode": true,
+      "boost": true,
+      "model": [
+        "183",
+        0
+      ]
+    },
+    "class_type": "Automatic CFG",
+    "_meta": {
+      "title": "Automatic CFG"
+    }
+  },
+  "186": {
+    "inputs": {
+      "task": "more detailed caption",
+      "text_input": "",
+      "max_new_tokens": 1024,
+      "num_beams": 3,
+      "do_sample": false,
+      "fill_mask": false,
+      "florence2_model": [
+        "188",
+        0
+      ],
+      "image": [
+        "422",
+        0
+      ]
+    },
+    "class_type": "LayerUtility: Florence2Image2Prompt",
+    "_meta": {
+      "title": "LayerUtility: Florence2 Image2Prompt"
+    }
+  },
+  "188": {
+    "inputs": {
+      "version": "base"
+    },
+    "class_type": "LayerMask: LoadFlorence2Model",
+    "_meta": {
+      "title": "LayerMask: Load Florence2 Model"
+    }
+  },
+  "189": {
+    "inputs": {
+      "output": "",
+      "source": [
+        "186",
+        0
+      ]
+    },
+    "class_type": "Display Any (rgthree)",
+    "_meta": {
+      "title": "Display Any (rgthree)"
+    }
+  },
+  "190": {
+    "inputs": {
+      "text_positive": [
+        "204",
+        0
+      ],
+      "text_negative": "((recessed lighting)) , downlight , down light , downlight , down light , ow quality, blurry, bad anatomy, worst quality, text, watermark, normal quality, ugly, signature, lowres, deformed, disfigured, cropped, jpeg artifacts, error, mutation, logo,, watermark,text, logo,contact, error, blurry, cropped, username, artist name, (worst quality, low quality:1.4),monochrome,, (worst quality, low quality,nsfw,nipple, pussy:1.5) , Recessed Lights , Can light  , Pot light , In-ceiling light , Ceiling spotlight , Flush mount light, Panel light , human , window ",
+      "style": "sai-photographic",
+      "log_prompt": "Yes",
+      "speak_and_recognation": true
+    },
+    "class_type": "SDXLPromptStyler",
+    "_meta": {
+      "title": "SDXL Prompt Styler"
+    }
+  },
+  "191": {
+    "inputs": {
+      "strength": 0.4,
+      "start_percent": 0,
+      "end_percent": 1,
+      "positive": [
+        "296",
+        0
+      ],
+      "negative": [
+        "295",
+        0
+      ],
+      "control_net": [
+        "195",
+        0
+      ],
+      "image": [
+        "201",
+        0
+      ],
+      "weights_override": [
+        "197",
+        0
+      ]
+    },
+    "class_type": "ACN_AdvancedControlNetApply",
+    "_meta": {
+      "title": "Apply Advanced ControlNet 🛂🅐🅒🅝"
+    }
+  },
+  "192": {
+    "inputs": {
+      "aspect_ratio": "original",
+      "proportional_width": 1,
+      "proportional_height": 1,
+      "fit": "crop",
+      "method": "lanczos",
+      "round_to_multiple": "256",
+      "scale_to_side": "total_pixel(kilo pixel)",
+      "scale_to_length": 1024,
+      "background_color": "#000000",
+      "image": [
+        "499",
+        0
+      ]
+    },
+    "class_type": "LayerUtility: ImageScaleByAspectRatio V2",
+    "_meta": {
+      "title": "LayerUtility: ImageScaleByAspectRatio V2"
+    }
+  },
+  "193": {
+    "inputs": {
+      "low_threshold": 44,
+      "high_threshold": 200,
+      "resolution": 1024,
+      "image": [
+        "277",
+        0
+      ]
+    },
+    "class_type": "CannyEdgePreprocessor",
+    "_meta": {
+      "title": "Canny Edge"
+    }
+  },
+  "194": {
+    "inputs": {
+      "images": [
+        "193",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image"
+    }
+  },
+  "195": {
+    "inputs": {
+      "control_net_name": "Kolors_depth.safetensors"
+    },
+    "class_type": "MZ_KolorsControlNetLoader",
+    "_meta": {
+      "title": "MinusZone - KolorsControlNetLoader"
+    }
+  },
+  "197": {
+    "inputs": {
+      "base_multiplier": 0.825,
+      "flip_weights": false,
+      "uncond_multiplier": 1
+    },
+    "class_type": "ScaledSoftControlNetWeights",
+    "_meta": {
+      "title": "Scaled Soft Weights 🛂🅐🅒🅝"
+    }
+  },
+  "198": {
+    "inputs": {
+      "strength": 0.55,
+      "start_percent": 0,
+      "end_percent": 1,
+      "positive": [
+        "191",
+        0
+      ],
+      "negative": [
+        "191",
+        1
+      ],
+      "control_net": [
+        "199",
+        0
+      ],
+      "image": [
+        "193",
+        0
+      ],
+      "weights_override": [
+        "200",
+        0
+      ]
+    },
+    "class_type": "ACN_AdvancedControlNetApply",
+    "_meta": {
+      "title": "Apply Advanced ControlNet 🛂🅐🅒🅝"
+    }
+  },
+  "199": {
+    "inputs": {
+      "control_net_name": "Kolors_canny.safetensors"
+    },
+    "class_type": "MZ_KolorsControlNetLoader",
+    "_meta": {
+      "title": "MinusZone - KolorsControlNetLoader"
+    }
+  },
+  "200": {
+    "inputs": {
+      "base_multiplier": 0.825,
+      "flip_weights": false,
+      "uncond_multiplier": 0.8
+    },
+    "class_type": "ScaledSoftControlNetWeights",
+    "_meta": {
+      "title": "Scaled Soft Weights 🛂🅐🅒🅝"
+    }
+  },
+  "201": {
+    "inputs": {
+      "ckpt_name": "depth_anything_v2_vitl.pth",
+      "resolution": 1024,
+      "image": [
+        "278",
+        0
+      ]
+    },
+    "class_type": "DepthAnythingV2Preprocessor",
+    "_meta": {
+      "title": "Depth Anything V2 - Relative"
+    }
+  },
+  "202": {
+    "inputs": {
+      "images": [
+        "201",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image"
+    }
+  },
+  "203": {
+    "inputs": {
+      "text": "black tv on the right,",
+      "speak_and_recognation": true
+    },
+    "class_type": "LayerUtility: TextBox",
+    "_meta": {
+      "title": "LayerUtility: TextBox"
+    }
+  },
+  "204": {
+    "inputs": {
+      "delimiter": ", ",
+      "clean_whitespace": "true",
+      "text_a": [
+        "203",
+        0
+      ],
+      "text_b": [
+        "186",
+        0
+      ]
+    },
+    "class_type": "Text Concatenate",
+    "_meta": {
+      "title": "Text Concatenate"
+    }
+  },
+  "205": {
+    "inputs": {
+      "weight": 0.65,
+      "weight_type": "style transfer",
+      "combine_embeds": "concat",
+      "start_at": 0,
+      "end_at": 1,
+      "embeds_scaling": "V only",
+      "model": [
+        "184",
+        0
+      ],
+      "ipadapter": [
+        "206",
+        0
+      ],
+      "image": [
+        "209",
+        0
+      ],
+      "clip_vision": [
+        "207",
+        0
+      ]
+    },
+    "class_type": "IPAdapterAdvanced",
+    "_meta": {
+      "title": "IPAdapter Advanced"
+    }
+  },
+  "206": {
+    "inputs": {
+      "ipadapter_file": "ip_adapter_plus_general.bin"
+    },
+    "class_type": "IPAdapterModelLoader",
+    "_meta": {
+      "title": "IPAdapter Model Loader"
+    }
+  },
+  "207": {
+    "inputs": {
+      "clip_name": "kolors_clip_vision.bin"
+    },
+    "class_type": "CLIPVisionLoader",
+    "_meta": {
+      "title": "Load CLIP Vision"
+    }
+  },
+  "209": {
+    "inputs": {
+      "aspect_ratio": "1:1",
+      "proportional_width": 1,
+      "proportional_height": 1,
+      "fit": "crop",
+      "method": "lanczos",
+      "round_to_multiple": "8",
+      "scale_to_side": "width",
+      "scale_to_length": 336,
+      "background_color": "#000000",
+      "image": [
+        "422",
+        0
+      ]
+    },
+    "class_type": "LayerUtility: ImageScaleByAspectRatio V2",
+    "_meta": {
+      "title": "LayerUtility: ImageScaleByAspectRatio V2"
+    }
+  },
+  "217": {
+    "inputs": {
+      "value": [
+        "180",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "218": {
+    "inputs": {
+      "value": [
+        "217",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "219": {
+    "inputs": {
+      "value": [
+        "218",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "220": {
+    "inputs": {
+      "value": [
+        "205",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "221": {
+    "inputs": {
+      "value": [
+        "220",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "222": {
+    "inputs": {
+      "value": [
+        "221",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "223": {
+    "inputs": {
+      "value": [
+        "198",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "224": {
+    "inputs": {
+      "value": [
+        "198",
+        1
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "225": {
+    "inputs": {
+      "value": [
+        "223",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "226": {
+    "inputs": {
+      "value": [
+        "224",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "227": {
+    "inputs": {
+      "value": [
+        "225",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "228": {
+    "inputs": {
+      "value": [
+        "226",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "244": {
+    "inputs": {
+      "images": [
+        "201",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image"
+    }
+  },
+  "249": {
+    "inputs": {
+      "value": [
+        "228",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "250": {
+    "inputs": {
+      "value": [
+        "227",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "274": {
+    "inputs": {
+      "value": [
+        "205",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "275": {
+    "inputs": {
+      "value": [
+        "274",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "276": {
+    "inputs": {
+      "value": [
+        "275",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "277": {
+    "inputs": {
+      "value": [
+        "192",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "278": {
+    "inputs": {
+      "value": [
+        "277",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "279": {
+    "inputs": {
+      "value": [
+        "219",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "280": {
+    "inputs": {
+      "value": [
+        "222",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "281": {
+    "inputs": {
+      "value": [
+        "280",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "282": {
+    "inputs": {
+      "value": [
+        "279",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "283": {
+    "inputs": {
+      "value": [
+        "250",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "284": {
+    "inputs": {
+      "value": [
+        "249",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "285": {
+    "inputs": {
+      "value": [
+        "192",
+        4
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "286": {
+    "inputs": {
+      "value": [
+        "192",
+        3
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "287": {
+    "inputs": {
+      "value": [
+        "285",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "288": {
+    "inputs": {
+      "value": [
+        "286",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "289": {
+    "inputs": {
+      "value": [
+        "288",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "290": {
+    "inputs": {
+      "value": [
+        "287",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "291": {
+    "inputs": {
+      "value": [
+        "289",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "292": {
+    "inputs": {
+      "value": [
+        "290",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "293": {
+    "inputs": {
+      "value": [
+        "171",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "294": {
+    "inputs": {
+      "value": [
+        "170",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "295": {
+    "inputs": {
+      "value": [
+        "293",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "296": {
+    "inputs": {
+      "value": [
+        "294",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "422": {
+    "inputs": {
+      "value": [
+        "558",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "488": {
+    "inputs": {
+      "images": [
+        "193",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image"
+    }
+  },
+  "496": {
+    "inputs": {
+      "text_positive": "The image shows a modern and minimalist bedroom with a window that offers a view of the greenery outside. The room has wooden flooring and white walls. On the left side of the room, there is a wooden wardrobe with sliding doors and shelves. Next to the wardrobe, there are two wooden nightstands with a vase of flowers and a chair. In the center of the bedroom is a large bed with a gray comforter and two pillows. ",
+      "text_negative": "((recessed lighting)) , downlight , down light , downlight , down light , ow quality, blurry, bad anatomy, worst quality, text, watermark, normal quality, ugly, signature, lowres, deformed, disfigured, cropped, jpeg artifacts, error, mutation, logo,, watermark,text, logo,contact, error, blurry, cropped, username, artist name, (worst quality, low quality:1.4),monochrome,, (worst quality, low quality,nsfw,nipple, pussy:1.5) , Recessed Lights , Can light  , Pot light , In-ceiling light , Ceiling spotlight , Flush mount light, Panel light",
+      "style": "sai-photographic",
+      "log_prompt": "Yes",
+      "speak_and_recognation": true
+    },
+    "class_type": "SDXLPromptStyler",
+    "_meta": {
+      "title": "SDXL Prompt Styler"
+    }
+  },
+  "497": {
+    "inputs": {
+      "value": [
+        "190",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "498": {
+    "inputs": {
+      "value": [
+        "190",
+        1
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "499": {
+    "inputs": {
+      "value": [
+        "501",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "501": {
+    "inputs": {
+      "value": [
+        "649",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "558": {
+    "inputs": {
+      "value": [
+        "648",
+        0
+      ]
+    },
+    "class_type": "ReroutePrimitive|pysssss",
+    "_meta": {
+      "title": "Reroute Primitive 🐍"
+    }
+  },
+  "561": {
+    "inputs": {
+      "images": [
+        "558",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image"
+    }
+  },
+  "648": {
+    "inputs": {
+      "image": "image (247).png",
+      "upload": "image"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image"
+    }
+  },
+  "649": {
+    "inputs": {
+      "image": "2 (8).jpg",
+      "upload": "image"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image"
+    }
+  }
+}

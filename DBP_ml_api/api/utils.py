@@ -1,20 +1,22 @@
 import websocket #NOTE: websocket-client (https://github.com/websocket-client/websocket-client)
-import uuid
+
 import json
 import urllib.request
 import urllib.parse
 import requests
 from workflow.workflow_path import WORKFLOW_DIR
+import random
 
-server_address = "127.0.0.1:8199"
-client_id = str(uuid.uuid4())
+
+server_address = "127.0.0.1:8188"
+
 
 with open(WORKFLOW_DIR, "r", encoding="utf-8") as f:
     workflow_data = f.read()
 
 workflow = json.loads(workflow_data)
 
-def queue_prompt(prompt):
+def queue_prompt(prompt, client_id):
     p = {"prompt": prompt, "client_id": client_id}
     data = json.dumps(p).encode('utf-8')
     req =  urllib.request.Request("http://{}/prompt".format(server_address), data=data)
@@ -30,8 +32,8 @@ def get_history(prompt_id):
     with urllib.request.urlopen("http://{}/history/{}".format(server_address, prompt_id)) as response:
         return json.loads(response.read())
 
-def get_images(ws, prompt):
-    prompt_id = queue_prompt(prompt)['prompt_id']
+def get_images(ws, prompt, client_id):
+    prompt_id = queue_prompt(prompt, client_id)['prompt_id']
     output_images = {}
     while True:
         out = ws.recv()
@@ -86,23 +88,36 @@ def upload_file(file, subfolder="", overwrite=False):
         print(error)
     return path
 
-def get_IMG2IMG_result(img_3d_input_path, img_style_input_path):
+def get_IMG2IMG_result(img_3d_input_path, img_style_input_path, client_id):
     ws = websocket.WebSocket()
     ws.connect("ws://{}/ws?clientId={}".format(server_address, client_id))
-    # set the image name for our LoadImage node
-    workflow["10"]["inputs"]["image"] = img_3d_input_path
+
+
+    workflow["173"]["inputs"]["noise_seed"] = random.randint(1,9999999999999999)
 
     # set the image name for our LoadImage node
-    workflow["23"]["inputs"]["image"] = img_style_input_path
-    images = get_images(ws, workflow)
+    workflow["649"]["inputs"]["image"] = img_3d_input_path
+
+    # set the image name for our LoadImage node
+    workflow["648"]["inputs"]["image"] = img_style_input_path
+    images = get_images(ws, workflow, client_id)
+    # print(type(images))
+    # print(images["181"])
+    # for key, value in images["181"].iteritems():
+    #     print(key)
+    #     print('-'*8)
+    ws.close()
+    return images["181"][-1]
 
     for node_id in images:
-        for image_data in images[node_id]:
-            from PIL import Image
-            import io
-            # image = Image.open(io.BytesIO(image_data))
-            return image_data
-            # image.show()
-            # print(image)
-            # save image
-            # image.save(f"{node_id}-{seed}.png")
+        print(node_id)
+        # for image_data in images[node_id]:
+        #     from PIL import Image
+        #     import io
+        #     image = Image.open(io.BytesIO(image_data))
+        #     # return image_data
+        #     # image.show()
+        #     # print(image)
+        #     # save image
+        #     image.save(f"{node_id}-.png")
+    
