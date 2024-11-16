@@ -18,5 +18,6 @@ from django.contrib import admin
 from django.urls import path
 from .views import IMG2IMG
 urlpatterns = [
-    path('', IMG2IMG.as_view(), name='IMG2IMG')
+    path('img-to-img/', IMG2IMG.as_view(), name='IMG2IMG'),
+    # path('img-to-img-with-promt/', IMG2IMG_WITH_PROMT_TEXT.as_view(), name='IMG2IMG_WITH_PROMT_TEXT'),
 ]

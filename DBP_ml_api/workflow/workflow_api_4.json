@@ -481,7 +481,7 @@
   },
   "203": {
     "inputs": {
-      "text": "black tv on the right,",
+      "text": "",
       "speak_and_recognation": true
     },
     "class_type": "LayerUtility: TextBox",

@@ -88,7 +88,7 @@ def upload_file(file, subfolder="", overwrite=False):
         print(error)
     return path
 
-def get_IMG2IMG_result(img_3d_input_path, img_style_input_path, client_id):
+def get_IMG2IMG_result(img_3d_input_path, img_style_input_path, client_id, promt_text=None):
     ws = websocket.WebSocket()
     ws.connect("ws://{}/ws?clientId={}".format(server_address, client_id))
 
@@ -100,6 +100,13 @@ def get_IMG2IMG_result(img_3d_input_path, img_style_input_path, client_id):
 
     # set the image name for our LoadImage node
     workflow["648"]["inputs"]["image"] = img_style_input_path
+
+    workflow["203"]["inputs"]["text"] = ''
+    if promt_text:
+        workflow["203"]["inputs"]["text"] = promt_text + ','
+    
+    print(workflow["203"]["inputs"]["text"])
+
     images = get_images(ws, workflow, client_id)
     # print(type(images))
     # print(images["181"])
@@ -120,4 +127,7 @@ def get_IMG2IMG_result(img_3d_input_path, img_style_input_path, client_id):
         #     # print(image)
         #     # save image
         #     image.save(f"{node_id}-.png")
+
+
+
     
