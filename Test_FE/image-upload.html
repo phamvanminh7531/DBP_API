@@ -181,7 +181,7 @@
                 formData.append('img_3d_input', selectedFiles.image1);
                 formData.append('img_style_input', selectedFiles.image2);
 
-                const response = await fetch('http://127.0.0.1:8000/api/', {
+                const response = await fetch('http://falco.dbhomes.com.vn:8000/api/', {
                     method: 'POST',
                     body: formData
                 });
