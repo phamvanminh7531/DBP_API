@@ -5,33 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dual Image Upload Demo</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
-            font-family: Arial, sans-serif;
         }
-        .upload-section {
+
+        .upload-section, .prompt-section {
             margin-bottom: 30px;
             padding: 20px;
             border: 1px solid #ddd;
             border-radius: 8px;
+            background-color: #f9f9f9;
         }
+
         .preview {
             margin-top: 20px;
-            max-width: 300px;
-            max-height: 300px;
+            width: 100%;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+            border: 1px dashed #ddd;
+            border-radius: 4px;
         }
+
+        .preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 4px;
+            max-height: 500px;
+        }
+
         .loading {
             display: none;
             color: #666;
             margin-top: 10px;
+            text-align: center;
         }
-        img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 4px;
-        }
+
         .submit-button {
             background-color: #4CAF50;
             color: white;
@@ -42,67 +68,142 @@
             margin: 20px 0;
             font-size: 16px;
             width: 100%;
+            transition: background-color 0.3s ease;
         }
+
         .submit-button:disabled {
             background-color: #cccccc;
             cursor: not-allowed;
         }
+
+        .submit-button:hover:not(:disabled) {
+            background-color: #45a049;
+        }
+
         .error-message {
             color: #ff0000;
             margin-top: 10px;
             display: none;
+            padding: 10px;
+            background-color: #fff3f3;
+            border-radius: 4px;
         }
+
         .result-section {
             margin-top: 30px;
             padding: 20px;
             border: 1px solid #ddd;
             border-radius: 8px;
             display: none;
+            background-color: #f9f9f9;
         }
+
         .image-grid {
-            display: flex;
+            display: grid;
             gap: 20px;
-            flex-wrap: wrap;
+            margin-top: 20px;
         }
+
         .image-container {
-            flex: 1;
-            min-width: 300px;
+            width: 100%;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: auto;
+            max-height: none;
+            object-fit: contain;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        h2 {
+            color: #444;
+            margin-bottom: 15px;
+        }
+
+        h3 {
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .prompt-input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            background-color: #fff;
+        }
+
+        .prompt-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .upload-section, .prompt-section {
+                padding: 15px;
+            }
+
+            .preview {
+                min-height: 150px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Dual Image Upload Demo</h1>
+        <h1>DbPlus AI Generation</h1>
 
         <div class="upload-section">
-            <h2>3D Input Image</h2>
+            <h2>3D View Image Input</h2>
             <input type="file" id="imageInput1" accept="image/*">
             <div id="preview1" class="preview"></div>
             <div id="error1" class="error-message"></div>
         </div>
 
         <div class="upload-section">
-            <h2>Style Input Image</h2>
+            <h2>Style Input</h2>
             <input type="file" id="imageInput2" accept="image/*">
             <div id="preview2" class="preview"></div>
             <div id="error2" class="error-message"></div>
         </div>
 
-        <!-- New Text Input Section -->
-        <div class="upload-section">
-            <h2>Additional Text Input</h2>
-            <input type="text" id="textInput" placeholder="Enter additional text or parameters">
-            <div id="textInputError" class="error-message"></div>
+        <div class="prompt-section">
+            <h2>Prompt Text Input</h2>
+            <input type="text" id="promptInput" class="prompt-input" placeholder="Enter your prompt here...">
+            <div id="promptError" class="error-message"></div>
         </div>
 
         <button onclick="uploadImages()" id="submitButton" class="submit-button" disabled>
-            Process Images
+            Generate Image
         </button>
         <div id="mainLoading" class="loading">Processing both images...</div>
         <div id="mainError" class="error-message"></div>
 
         <div id="resultSection" class="result-section">
-            <h2>Processing Results</h2>
+            <h2>Result</h2>
             <div class="image-grid">
                 <div class="image-container">
                     <h3>Result Image</h3>
@@ -115,15 +216,17 @@
     <script>
         let selectedFiles = {
             image1: null,
-            image2: null
+            image2: null,
+            
         };
-
-        let additionalText = ""; // Variable to hold the text input value
 
         function updateSubmitButton() {
             const submitButton = document.getElementById('submitButton');
-            submitButton.disabled = !(selectedFiles.image1 && selectedFiles.image2 && additionalText.trim() !== "");
+            const promptInput = document.getElementById('promptInput');
+            submitButton.disabled = !(selectedFiles.image1 && selectedFiles.image2);
         }
+
+        document.getElementById('promptInput').addEventListener('input', updateSubmitButton);
 
         function setupImagePreview(inputNumber) {
             const fileInput = document.getElementById(`imageInput${inputNumber}`);
@@ -169,37 +272,17 @@
             });
         }
 
-        // New function to handle additional text input
-        function handleTextInput() {
-            const textInput = document.getElementById('textInput');
-            const textInputError = document.getElementById('textInputError');
-            
-            additionalText = textInput.value.trim();
-            
-            // You can add additional validation here if needed
-            if (additionalText.length > 100) {
-                textInputError.textContent = "Text input is too long (max 100 characters)";
-                textInputError.style.display = 'block';
-            } else {
-                textInputError.style.display = 'none';
-            }
-            
-            updateSubmitButton();
-        }
-
-        // Modify uploadImages function to include additionalText
         async function uploadImages() {
             const mainLoading = document.getElementById('mainLoading');
             const mainError = document.getElementById('mainError');
             const submitButton = document.getElementById('submitButton');
             const resultSection = document.getElementById('resultSection');
             const resultDiv = document.getElementById('result');
+            const promptInput = document.getElementById('promptInput');
 
-            // Clear previous result and hide result section
             resultSection.style.display = 'none';
             resultDiv.innerHTML = '';
 
-            // Show loading state
             mainLoading.style.display = 'block';
             mainError.style.display = 'none';
             submitButton.disabled = true;
@@ -208,9 +291,11 @@
                 const formData = new FormData();
                 formData.append('img_3d_input', selectedFiles.image1);
                 formData.append('img_style_input', selectedFiles.image2);
-                formData.append('promt_text', additionalText); // Add the text input value
+                formData.append('promt_text', promptInput.value.trim());
 
-                const response = await fetch('http://127.0.0.1:8000/api/img-to-img/', {
+                console.log(formData);
+
+                const response = await fetch('http://falco.dbhomes.com.vn:8000/api/img-to-img/', {
                     method: 'POST',
                     body: formData
                 });
@@ -221,8 +306,7 @@
 
                 const data = await response.json();
                 
-                // Update result image and show result section
-                resultDiv.innerHTML = `<img src="data:image/jpeg;base64,${data.image_data}" alt="${new Date().getTime()}">`;
+                resultDiv.innerHTML = `<img src="data:image/jpeg;base64,${data.image_data}" alt="Generated Result">`;
                 resultSection.style.display = 'block';
 
             } catch (error) {
@@ -235,12 +319,8 @@
             }
         }
 
-        // Initialize image previews
         setupImagePreview(1);
         setupImagePreview(2);
-
-        // Initialize text input listener
-        document.getElementById('textInput').addEventListener('input', handleTextInput);
     </script>
 </body>
 </html>
