@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from django.views.static import serve 
 from django.conf import settings
+from DBP_ml_api.celery import app
+app.control.purge()
 
 urlpatterns = [
     path('admin/', admin.site.urls),

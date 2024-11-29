@@ -1,0 +1,184 @@
+{
+  "658": {
+    "inputs": {
+      "text": "",
+      "clip": [
+        "663",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "659": {
+    "inputs": {
+      "text": "",
+      "clip": [
+        "663",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "660": {
+    "inputs": {
+      "seed": 345969454419511,
+      "steps": 20,
+      "cfg": 7,
+      "sampler_name": "euler",
+      "scheduler": "normal",
+      "denoise": 1,
+      "model": [
+        "671",
+        0
+      ],
+      "positive": [
+        "658",
+        0
+      ],
+      "negative": [
+        "659",
+        0
+      ],
+      "latent_image": [
+        "668",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "663": {
+    "inputs": {
+      "ckpt_name": "RealitiesEdgeXLLIGHTNING_TURBOV7.safetensors"
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "Load Checkpoint"
+    }
+  },
+  "664": {
+    "inputs": {
+      "samples": [
+        "660",
+        0
+      ],
+      "vae": [
+        "663",
+        2
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "667": {
+    "inputs": {
+      "filename_prefix": "ComfyUI",
+      "images": [
+        "664",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "668": {
+    "inputs": {
+      "pixels": [
+        "674",
+        0
+      ],
+      "vae": [
+        "663",
+        2
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "670": {
+    "inputs": {
+      "ipadapter_file": "ip-adapter_sdxl_vit-h.bin"
+    },
+    "class_type": "IPAdapterModelLoader",
+    "_meta": {
+      "title": "IPAdapter Model Loader"
+    }
+  },
+  "671": {
+    "inputs": {
+      "weight": 0.4,
+      "weight_type": "linear",
+      "combine_embeds": "concat",
+      "start_at": 0,
+      "end_at": 1,
+      "embeds_scaling": "V only",
+      "model": [
+        "663",
+        0
+      ],
+      "ipadapter": [
+        "670",
+        0
+      ],
+      "image": [
+        "673",
+        0
+      ],
+      "clip_vision": [
+        "672",
+        0
+      ]
+    },
+    "class_type": "IPAdapterAdvanced",
+    "_meta": {
+      "title": "IPAdapter Advanced"
+    }
+  },
+  "672": {
+    "inputs": {
+      "clip_name": "model.safetensors"
+    },
+    "class_type": "CLIPVisionLoader",
+    "_meta": {
+      "title": "Load CLIP Vision"
+    }
+  },
+  "673": {
+    "inputs": {
+      "image": "http://127.0.0.1:8080/media/images/co_dau_qRfnm7p.jpg",
+      "keep_alpha_channel": false,
+      "output_mode": false,
+      "choose image to upload": "image"
+    },
+    "class_type": "LoadImageFromUrl",
+    "_meta": {
+      "title": "Load Style Image"
+    }
+  },
+  "674": {
+    "inputs": {
+      "image": "http://127.0.0.1:8080/media/images/IMG_1833_5aMcdqy.JPG",
+      "keep_alpha_channel": false,
+      "output_mode": false,
+      "choose image to upload": "image"
+    },
+    "class_type": "LoadImageFromUrl",
+    "_meta": {
+      "title": "Load 3D Image"
+    }
+  }
+}

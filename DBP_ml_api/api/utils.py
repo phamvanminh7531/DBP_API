@@ -6,9 +6,13 @@ import urllib.parse
 import requests
 from workflow.workflow_path import WORKFLOW_DIR
 import random
+from io import BytesIO
+import io
+from PIL import Image
+import base64
 
 
-server_address = "127.0.0.1:8188"
+server_address = "192.168.1.49:8199"
 
 
 with open(WORKFLOW_DIR, "r", encoding="utf-8") as f:
@@ -103,7 +107,7 @@ def get_IMG2IMG_result(img_3d_input_path, img_style_input_path, client_id, promt
 
     workflow["203"]["inputs"]["text"] = ''
     if promt_text:
-        workflow["203"]["inputs"]["text"] = promt_text + ','
+        workflow["203"]["inputs"]["text"] = promt_text
     
     print(workflow["203"]["inputs"]["text"])
 
@@ -128,6 +132,41 @@ def get_IMG2IMG_result(img_3d_input_path, img_style_input_path, client_id, promt
         #     # save image
         #     image.save(f"{node_id}-.png")
 
-
-
+def test_IMG2IMG(img_3d_input_url, img_style_input_url, client_id, promt_text=None):
+    ws = websocket.WebSocket()
+    ws.connect("ws://{}/ws?clientId={}".format(server_address, client_id))
     
+
+
+    # workflow["173"]["inputs"]["noise_seed"] = random.randint(1,9999999999999999)
+
+    # set the image name for our LoadImage node
+    workflow["674"]["inputs"]["image"] = img_3d_input_url
+
+    # set the image name for our LoadImage node
+    workflow["673"]["inputs"]["image"] = img_style_input_url
+
+    workflow["659"]["inputs"]["text"] = ''
+    if promt_text:
+        workflow["659"]["inputs"]["text"] = promt_text
+    
+    images = get_images(ws, workflow, client_id)
+    # print(type(images))
+    # print(images["181"])
+    # for key, value in images["181"].iteritems():
+    #     print(key)
+    #     print('-'*8)
+    ws.close()
+    return images["667"][-1]
+
+
+def image_base64_encode(image_data):
+    """
+    This function return base64 image data from image data of response from AI Gen Module    
+    """
+    image = Image.open(io.BytesIO(image_data))
+    img_io = BytesIO()
+    image.save(img_io, 'PNG')
+    img_io.seek(0)
+
+    return base64.b64encode(img_io.read()).decode('utf-8')

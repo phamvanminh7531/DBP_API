@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-76(e(3xyqov7@9-)ql5+q(d0*3roc(8@*s8z)&d+89t2o*789='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -37,9 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'api',
     'rest_framework',
-    'corsheaders',
+    
 ]
 
 MIDDLEWARE = [
@@ -50,8 +51,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'DBP_ml_api.urls'
@@ -129,16 +131,28 @@ MEDIA_ROOT = os.path.join(BASE_DIR,'media/')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOW_ALL_ORIGINS = True # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3030',
-] # If this is used, then not need to use `CORS_ALLOW_ALL_ORIGINS = True`
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    'http://localhost:3030',
-]
+
+# CORS_ALLOWED_ORIGINS = [
+#     'http://localhost:3030',
+#     'http://falco.dbhomes.com.vn:8000',
+#     'http://192.168.1.49:8000',
+
+# ] # If this is used, then not need to use `CORS_ALLOW_ALL_ORIGINS = True`
+
+# CORS_ALLOWED_ORIGIN_REGEXES = [
+#     'http://localhost:3030',
+#     'http://falco.dbhomes.com.vn:8000',
+#     'http://192.168.1.49:8000'
+# ]
 
 
 REST_FRAMEWORK = {
     "UPLOADED_FILES_USE_URL": False
     }
+
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
