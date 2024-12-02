@@ -58,3 +58,21 @@ class IMG2IMG(APIView):
             }, status=status.HTTP_202_ACCEPTED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+from celery.result import AsyncResult
+from django.http import JsonResponse
+
+def get_task_status(request, task_id):
+    result = AsyncResult(task_id)  # Lấy thông tin task qua ID
+
+    # Kiểm tra trạng thái
+    if result.state == 'PENDING':
+        return JsonResponse({'status': 'PENDING'})  # Task đang chờ xử lý
+    elif result.state == 'STARTED':
+        return JsonResponse({'status': 'STARTED'})  # Task đang chạy
+    elif result.state == 'SUCCESS':
+        return JsonResponse({'status': 'SUCCESS', 'result': result.result})  # Task hoàn thành
+    elif result.state == 'FAILURE':
+        return JsonResponse({'status': 'FAILURE', 'error': str(result.info)})  # Task thất bại
+    else:
+        return JsonResponse({'status': result.state})  # Các trạng thái khác
