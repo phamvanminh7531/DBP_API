@@ -21,7 +21,7 @@ from .utils import image_base64_encode
 #             promt_text = image_instance.promt_text
                    
             
-#             result = test_IMG2IMG(img_3d_input_url=img_3d_input_url, 
+#             result = get_IMG2IMG_result(img_3d_input_url=img_3d_input_url, 
 #                                         img_style_input_url=img_style_input_url, 
 #                                         client_id=client_id,
 #                                          promt_text=promt_text)

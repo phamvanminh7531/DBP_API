@@ -11,8 +11,19 @@ import io
 from PIL import Image
 import base64
 
+LOAD_BALANCER = {
+    "Server_1" : {
+        "host_name": "192.168.1.49:8188",
+        "count": 0
+    },
+    "Server_2" : {
+        "host_name": "192.168.1.50:8188",
+        "count": 0
+    }
+}
 
-server_address = "192.168.1.49:8199"
+# server_address = "192.168.1.49:8188"
+
 
 
 with open(WORKFLOW_DIR, "r", encoding="utf-8") as f:
@@ -20,24 +31,50 @@ with open(WORKFLOW_DIR, "r", encoding="utf-8") as f:
 
 workflow = json.loads(workflow_data)
 
-def queue_prompt(prompt, client_id):
+def queue_prompt(prompt, client_id, server_address):
     p = {"prompt": prompt, "client_id": client_id}
     data = json.dumps(p).encode('utf-8')
     req =  urllib.request.Request("http://{}/prompt".format(server_address), data=data)
     return json.loads(urllib.request.urlopen(req).read())
 
-def get_image(filename, subfolder, folder_type):
+def get_image(filename, subfolder, folder_type, server_address):
     data = {"filename": filename, "subfolder": subfolder, "type": folder_type}
     url_values = urllib.parse.urlencode(data)
     with urllib.request.urlopen("http://{}/view?{}".format(server_address, url_values)) as response:
         return response.read()
 
-def get_history(prompt_id):
+def get_history(prompt_id, server_address):
     with urllib.request.urlopen("http://{}/history/{}".format(server_address, prompt_id)) as response:
         return json.loads(response.read())
 
-def get_images(ws, prompt, client_id):
-    prompt_id = queue_prompt(prompt, client_id)['prompt_id']
+# def get_images(ws, prompt, client_id, server_address):
+#     prompt_id = queue_prompt(prompt, client_id, server_address)['prompt_id']
+#     output_images = {}
+#     while True:
+#         out = ws.recv()
+#         if isinstance(out, str):
+#             message = json.loads(out)
+#             if message['type'] == 'executing':
+#                 data = message['data']
+#                 if data['node'] is None and data['prompt_id'] == prompt_id:
+#                     break #Execution is done
+#         else:
+#             continue #previews are binary data
+
+#     history = get_history(prompt_id, server_address)[prompt_id]
+#     for o in history['outputs']:
+#         for node_id in history['outputs']:
+#             node_output = history['outputs'][node_id]
+#             if 'images' in node_output:
+#                 images_output = []
+#                 for image in node_output['images']:
+#                     image_data = get_image(image['filename'], image['subfolder'], image['type'], server_address)
+#                     images_output.append(image_data)
+#             output_images[node_id] = images_output
+#     return output_images
+
+def get_images(ws, prompt, client_id, server_address):
+    prompt_id = queue_prompt(prompt, client_id, server_address)['prompt_id']
     output_images = {}
     while True:
         out = ws.recv()
@@ -46,21 +83,22 @@ def get_images(ws, prompt, client_id):
             if message['type'] == 'executing':
                 data = message['data']
                 if data['node'] is None and data['prompt_id'] == prompt_id:
-                    break #Execution is done
+                    break  # Execution is done
         else:
-            continue #previews are binary data
+            continue  # Previews are binary data
 
-    history = get_history(prompt_id)[prompt_id]
-    for o in history['outputs']:
-        for node_id in history['outputs']:
-            node_output = history['outputs'][node_id]
-            if 'images' in node_output:
-                images_output = []
-                for image in node_output['images']:
-                    image_data = get_image(image['filename'], image['subfolder'], image['type'])
-                    images_output.append(image_data)
-            output_images[node_id] = images_output
-
+    history = get_history(prompt_id, server_address)[prompt_id]
+    for node_id in history['outputs']:
+        node_output = history['outputs'][node_id]
+        if 'images' in node_output:
+            images_output = []
+            for image in node_output['images']:
+                image_data = get_image(image['filename'], image['subfolder'], image['type'], server_address)
+                images_output.append(image_data)
+            output_images[node_id] = images_output  # Assign to `output_images`
+        else:
+            # Initialize `output_images[node_id]` to an empty list if no images are found
+            output_images[node_id] = []
     return output_images
 
 def upload_file(file, subfolder="", overwrite=False):
@@ -92,7 +130,7 @@ def upload_file(file, subfolder="", overwrite=False):
         print(error)
     return path
 
-def get_IMG2IMG_result(img_3d_input_path, img_style_input_path, client_id, promt_text=None):
+def get_IMG2IMG_result(img_3d_input_path, img_style_input_path, client_id, server_address, promt_text=None):
     ws = websocket.WebSocket()
     ws.connect("ws://{}/ws?clientId={}".format(server_address, client_id))
 
@@ -100,10 +138,10 @@ def get_IMG2IMG_result(img_3d_input_path, img_style_input_path, client_id, promt
     workflow["173"]["inputs"]["noise_seed"] = random.randint(1,9999999999999999)
 
     # set the image name for our LoadImage node
-    workflow["649"]["inputs"]["image"] = img_3d_input_path
+    workflow["659"]["inputs"]["image"] = img_3d_input_path
 
     # set the image name for our LoadImage node
-    workflow["648"]["inputs"]["image"] = img_style_input_path
+    workflow["660"]["inputs"]["image"] = img_style_input_path
 
     workflow["203"]["inputs"]["text"] = ''
     if promt_text:
@@ -111,7 +149,7 @@ def get_IMG2IMG_result(img_3d_input_path, img_style_input_path, client_id, promt
     
     print(workflow["203"]["inputs"]["text"])
 
-    images = get_images(ws, workflow, client_id)
+    images = get_images(ws, workflow, client_id, server_address)
     # print(type(images))
     # print(images["181"])
     # for key, value in images["181"].iteritems():
@@ -132,32 +170,33 @@ def get_IMG2IMG_result(img_3d_input_path, img_style_input_path, client_id, promt
         #     # save image
         #     image.save(f"{node_id}-.png")
 
-def test_IMG2IMG(img_3d_input_url, img_style_input_url, client_id, promt_text=None):
+def test_IMG2IMG(img_3d_input_url, img_style_input_url, client_id, server_address, promt_text=None):
+    print(LOAD_BALANCER)
     ws = websocket.WebSocket()
     ws.connect("ws://{}/ws?clientId={}".format(server_address, client_id))
     
 
 
-    # workflow["173"]["inputs"]["noise_seed"] = random.randint(1,9999999999999999)
+    workflow["173"]["inputs"]["noise_seed"] = random.randint(1,9999999999999999)
 
     # set the image name for our LoadImage node
-    workflow["674"]["inputs"]["image"] = img_3d_input_url
+    workflow["659"]["inputs"]["image"] = img_3d_input_url
 
     # set the image name for our LoadImage node
-    workflow["673"]["inputs"]["image"] = img_style_input_url
+    workflow["660"]["inputs"]["image"] = img_style_input_url
 
-    workflow["659"]["inputs"]["text"] = ''
+    workflow["203"]["inputs"]["text"] = ''
     if promt_text:
-        workflow["659"]["inputs"]["text"] = promt_text
+        workflow["203"]["inputs"]["text"] = promt_text
     
-    images = get_images(ws, workflow, client_id)
+    images = get_images(ws, workflow, client_id, server_address)
     # print(type(images))
     # print(images["181"])
     # for key, value in images["181"].iteritems():
     #     print(key)
     #     print('-'*8)
     ws.close()
-    return images["667"][-1]
+    return images["181"][-1]
 
 
 def image_base64_encode(image_data):
