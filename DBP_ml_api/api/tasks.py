@@ -10,7 +10,7 @@ def process_image_task(self, img_3d_input_url, img_style_input_url, client_id, p
 
     # Xác định server dựa vào tên worker
     if 'worker1' in worker_name:
-        server_address = '192.168.1.49:8199'
+        server_address = '192.168.1.49:8188'
     elif 'worker2' in worker_name:
         server_address = '192.168.1.50:8188'
     else:

@@ -53,8 +53,7 @@ class IMG2IMG(APIView):
             task = process_image_task.delay(img_3d_input_url, img_style_input_url, client_id, promt_text)
 
             return Response({
-                "task_id": task.id,
-                "status": "Processing"
+                "task_id": task.id
             }, status=status.HTTP_202_ACCEPTED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
