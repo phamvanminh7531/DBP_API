@@ -16,9 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import IMG2IMG, get_task_status
+from .views import IMG2IMG, get_task_status, MASK
 urlpatterns = [
     path('img-to-img/', IMG2IMG.as_view(), name='IMG2IMG'),
+    path('mask/', MASK.as_view(), name='MASK'),
     path('task-status/<str:task_id>/', get_task_status, name='task_status'),
     # path('img-to-img-with-promt/', IMG2IMG_WITH_PROMT_TEXT.as_view(), name='IMG2IMG_WITH_PROMT_TEXT'),
 ]

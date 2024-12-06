@@ -3,11 +3,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
-from .serializers import TWO_IMG2IMGSerializers, TWO_IMG2IMG_WITH_PROMTSerializers
-from .utils import get_IMG2IMG_result, test_IMG2IMG
-from django.conf import settings
+from .serializers import TWO_IMG2IMG_WITH_PROMTSerializers, MASKSerializers
 import uuid
-from .utils import image_base64_encode
+from celery.result import AsyncResult
+from django.http import JsonResponse
+from .tasks import process_img2img_task, process_mask_img_task
 
 # class IMG2IMG(APIView):
 #     parser_classes = (MultiPartParser, FormParser)
@@ -34,8 +34,27 @@ from .utils import image_base64_encode
 #                 }, status=status.HTTP_201_CREATED)
 #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class MASK(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+    def post(self, request):
+        serializer = MASKSerializers(data=request.data)
+        if serializer.is_valid():
+            client_id = str(uuid.uuid4())
+            image_instance = serializer.save()
+            img_mask_input_url = request.build_absolute_uri(image_instance.img_mask_input.url)
+            img_material_input_url = request.build_absolute_uri(image_instance.img_material_input.url)
+            ipadapter_weight = image_instance.ipadapter_weight
+         
+            task = process_mask_img_task.delay(img_mask_url=img_mask_input_url,
+                                     img_material_url=img_material_input_url,
+                                     ipadapter_weight=ipadapter_weight,
+                                     client_id=client_id,
+                                     )
+            return Response({
+                "task_id": task.id
+            }, status=status.HTTP_202_ACCEPTED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-from .tasks import process_image_task
 
 class IMG2IMG(APIView):
     parser_classes = (MultiPartParser, FormParser)
@@ -50,16 +69,14 @@ class IMG2IMG(APIView):
             promt_text = image_instance.promt_text
 
             # Gửi task đến Celery
-            task = process_image_task.delay(img_3d_input_url, img_style_input_url, client_id, promt_text)
+            task = process_img2img_task.delay(img_3d_input_url, img_style_input_url, client_id, promt_text)
 
             return Response({
                 "task_id": task.id
             }, status=status.HTTP_202_ACCEPTED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-from celery.result import AsyncResult
-from django.http import JsonResponse
+    
 
 def get_task_status(request, task_id):
     result = AsyncResult(task_id)  # Lấy thông tin task qua ID

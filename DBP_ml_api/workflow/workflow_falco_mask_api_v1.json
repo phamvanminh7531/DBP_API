@@ -1,0 +1,330 @@
+{
+  "370": {
+    "inputs": {
+      "weight": 0.8,
+      "weight_type": "style transfer",
+      "combine_embeds": "concat",
+      "start_at": 0.1,
+      "end_at": 1,
+      "embeds_scaling": "V only",
+      "model": [
+        "405",
+        0
+      ],
+      "ipadapter": [
+        "371",
+        0
+      ],
+      "image": [
+        "429",
+        0
+      ],
+      "clip_vision": [
+        "372",
+        0
+      ]
+    },
+    "class_type": "IPAdapterAdvanced",
+    "_meta": {
+      "title": "IPAdapter Advanced"
+    }
+  },
+  "371": {
+    "inputs": {
+      "ipadapter_file": "ip-adapter_sdxl_vit-h.bin"
+    },
+    "class_type": "IPAdapterModelLoader",
+    "_meta": {
+      "title": "IPAdapter Model Loader"
+    }
+  },
+  "372": {
+    "inputs": {
+      "clip_name": "model.safetensors"
+    },
+    "class_type": "CLIPVisionLoader",
+    "_meta": {
+      "title": "Load CLIP Vision"
+    }
+  },
+  "383": {
+    "inputs": {
+      "samples": [
+        "427",
+        0
+      ],
+      "vae": [
+        "384",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "384": {
+    "inputs": {
+      "vae_name": "sdxl.vae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "393": {
+    "inputs": {
+      "filename_prefix": "Mask/mask",
+      "images": [
+        "383",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "395": {
+    "inputs": {
+      "grow_mask_by": 12,
+      "pixels": [
+        "664",
+        0
+      ],
+      "vae": [
+        "384",
+        0
+      ],
+      "mask": [
+        "396",
+        0
+      ]
+    },
+    "class_type": "VAEEncodeForInpaint",
+    "_meta": {
+      "title": "VAE Encode (for Inpainting)"
+    }
+  },
+  "396": {
+    "inputs": {
+      "expand": 2,
+      "incremental_expandrate": 0,
+      "tapered_corners": true,
+      "flip_input": false,
+      "blur_radius": 0.2,
+      "lerp_alpha": 1,
+      "decay_factor": 1,
+      "fill_holes": false,
+      "mask": [
+        "664",
+        1
+      ]
+    },
+    "class_type": "GrowMaskWithBlur",
+    "_meta": {
+      "title": "Grow Mask With Blur"
+    }
+  },
+  "397": {
+    "inputs": {
+      "mask_opacity": 1,
+      "mask_color": "255, 255, 255",
+      "pass_through": false,
+      "mask": [
+        "396",
+        0
+      ]
+    },
+    "class_type": "ImageAndMaskPreview",
+    "_meta": {
+      "title": "ImageAndMaskPreview"
+    }
+  },
+  "405": {
+    "inputs": {
+      "ckpt_name": "RealitiesEdgeXLLIGHTNING_TURBOXLV2.safetensors"
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "Load Checkpoint"
+    }
+  },
+  "407": {
+    "inputs": {
+      "strength": 1,
+      "start_percent": 0,
+      "end_percent": 1,
+      "positive": [
+        "425",
+        0
+      ],
+      "negative": [
+        "426",
+        0
+      ],
+      "control_net": [
+        "408",
+        0
+      ],
+      "image": [
+        "430",
+        0
+      ]
+    },
+    "class_type": "ControlNetApplyAdvanced",
+    "_meta": {
+      "title": "Apply ControlNet"
+    }
+  },
+  "408": {
+    "inputs": {
+      "control_net_name": "xinsir.safetensors"
+    },
+    "class_type": "ControlNetLoader",
+    "_meta": {
+      "title": "Load ControlNet Model"
+    }
+  },
+  "425": {
+    "inputs": {
+      "text": "",
+      "speak_and_recognation": true,
+      "clip": [
+        "405",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "426": {
+    "inputs": {
+      "text": "oil painting, 3d, anime, bad image, low resolution",
+      "speak_and_recognation": true,
+      "clip": [
+        "405",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "427": {
+    "inputs": {
+      "seed": 697843559586421,
+      "steps": 8,
+      "cfg": 2,
+      "sampler_name": "dpmpp_sde",
+      "scheduler": "karras",
+      "denoise": 1,
+      "model": [
+        "432",
+        0
+      ],
+      "positive": [
+        "407",
+        0
+      ],
+      "negative": [
+        "407",
+        1
+      ],
+      "latent_image": [
+        "395",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "428": {
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "interpolation": "lanczos",
+      "method": "stretch",
+      "condition": "always",
+      "multiple_of": 0,
+      "image": [
+        "661",
+        0
+      ]
+    },
+    "class_type": "ImageResize+",
+    "_meta": {
+      "title": "🔧 Image Resize"
+    }
+  },
+  "429": {
+    "inputs": {
+      "interpolation": "LANCZOS",
+      "crop_position": "center",
+      "sharpening": 0.15,
+      "image": [
+        "428",
+        0
+      ]
+    },
+    "class_type": "PrepImageForClipVision",
+    "_meta": {
+      "title": "Prep Image For ClipVision"
+    }
+  },
+  "430": {
+    "inputs": {
+      "ckpt_name": "depth_anything_v2_vitl.pth",
+      "resolution": 1024,
+      "image": [
+        "664",
+        0
+      ]
+    },
+    "class_type": "DepthAnythingV2Preprocessor",
+    "_meta": {
+      "title": "Depth Anything V2 - Relative"
+    }
+  },
+  "432": {
+    "inputs": {
+      "model": [
+        "370",
+        0
+      ]
+    },
+    "class_type": "DifferentialDiffusion",
+    "_meta": {
+      "title": "Differential Diffusion"
+    }
+  },
+  "661": {
+    "inputs": {
+      "image": "http://127.0.0.1:8000/media/images/A2.jpg",
+      "keep_alpha_channel": false,
+      "output_mode": false,
+      "choose image to upload": "image"
+    },
+    "class_type": "LoadImageFromUrl",
+    "_meta": {
+      "title": "Material"
+    }
+  },
+  "664": {
+    "inputs": {
+      "image": "http://127.0.0.1:8000/media/images/A4.png",
+      "keep_alpha_channel": false,
+      "output_mode": false,
+      "choose image to upload": "image"
+    },
+    "class_type": "LoadImageFromUrl",
+    "_meta": {
+      "title": "Image Mask"
+    }
+  }
+}

@@ -33,6 +33,14 @@ class TWO_IMG2IMG(models.Model):
     def __str__(self):
         return super().__str__()
 
+class MASK(models.Model):
+    img_mask_input = models.ImageField(upload_to=upload_to, blank=True, null=True)
+    img_material_input = models.ImageField(upload_to=upload_to, blank=True, null=True)
+    ipadapter_weight = models.FloatField(default=0.4)
+
+    def __str__(self):
+        return super().__str__()
+
 class TWO_IMG2IMG_WITH_PROMT(models.Model):
     img_3d_input = models.ImageField(upload_to=upload_to, blank=True, null=True)
     img_style_input = models.ImageField(upload_to=upload_to, blank=True, null=True)

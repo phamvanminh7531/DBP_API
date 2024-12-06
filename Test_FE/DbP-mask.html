@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mask Generator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .upload-section, .prompt-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        .preview {
+            margin-top: 20px;
+            width: 100%;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+            border: 1px dashed #ddd;
+            border-radius: 4px;
+        }
+
+        .preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 4px;
+            max-height: 500px;
+        }
+
+        .loading {
+            display: none;
+            color: #666;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .submit-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 20px 0;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        .submit-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .submit-button:hover:not(:disabled) {
+            background-color: #45a049;
+        }
+
+        .error-message {
+            color: #ff0000;
+            margin-top: 10px;
+            display: none;
+            padding: 10px;
+            background-color: #fff3f3;
+            border-radius: 4px;
+        }
+
+        .result-section {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            display: none;
+            background-color: #f9f9f9;
+        }
+
+        .image-grid {
+            display: grid;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .image-container {
+            width: 100%;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: auto;
+            max-height: none;
+            object-fit: contain;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        h2 {
+            color: #444;
+            margin-bottom: 15px;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .prompt-input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            background-color: #fff;
+        }
+
+        .prompt-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .upload-section, .prompt-section {
+                padding: 15px;
+            }
+
+            .preview {
+                min-height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>DbPlus AI Generation</h1>
+
+        <div class="upload-section">
+            <h2>3D View Image Input</h2>
+            <input type="file" id="imageInput1" accept="image/*">
+            <div id="preview1" class="preview"></div>
+            <div id="error1" class="error-message"></div>
+        </div>
+
+        <div class="upload-section">
+            <h2>Style Input</h2>
+            <input type="file" id="imageInput2" accept="image/*">
+            <div id="preview2" class="preview"></div>
+            <div id="error2" class="error-message"></div>
+        </div>
+
+        <div class="prompt-section">
+            <h2>Prompt Text Input</h2>
+            <input type="text" id="ipadapter_weight" class="prompt-input" placeholder="Enter a style or description for the image...">
+            <div id="promptError" class="error-message"></div>
+        </div>
+
+        <button onclick="uploadImages()" id="submitButton" class="submit-button" disabled>
+            Generate Image
+        </button>
+        <div id="mainLoading" class="loading">Processing...</div>
+        <div id="mainError" class="error-message"></div>
+
+        <div id="resultSection" class="result-section">
+            <h2>Result</h2>
+            <div class="image-grid">
+                <div class="image-container">
+                    <h3>Result Image</h3>
+                    <div id="result" class="preview"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedFiles = {
+            image1: null,
+            image2: null
+        };
+
+        function updateSubmitButton() {
+            const submitButton = document.getElementById('submitButton');
+            const promptInput = document.getElementById('ipadapter_weight').value.trim();
+            submitButton.disabled = !(selectedFiles.image1 && selectedFiles.image2 && promptInput);
+        }
+
+        document.getElementById('ipadapter_weight').addEventListener('input', updateSubmitButton);
+
+        function setupImagePreview(inputNumber) {
+            const fileInput = document.getElementById(`imageInput${inputNumber}`);
+            const errorDiv = document.getElementById(`error${inputNumber}`);
+
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                const previewDiv = document.getElementById(`preview${inputNumber}`);
+                errorDiv.style.display = 'none';
+                
+                if (file) {
+                    if (!file.type.startsWith('image/')) {
+                        errorDiv.textContent = 'Please select an image file';
+                        errorDiv.style.display = 'block';
+                        fileInput.value = '';
+                        selectedFiles[`image${inputNumber}`] = null;
+                        updateSubmitButton();
+                        return;
+                    }
+
+                    if (file.size > 5 * 1024 * 1024) {
+                        errorDiv.textContent = 'Image size should be less than 5MB';
+                        errorDiv.style.display = 'block';
+                        fileInput.value = '';
+                        selectedFiles[`image${inputNumber}`] = null;
+                        updateSubmitButton();
+                        return;
+                    }
+
+                    selectedFiles[`image${inputNumber}`] = file;
+                    updateSubmitButton();
+
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewDiv.innerHTML = `<img src="${e.target.result}" alt="Preview ${inputNumber}">`;
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    selectedFiles[`image${inputNumber}`] = null;
+                    updateSubmitButton();
+                    previewDiv.innerHTML = '';
+                }
+            });
+        }
+
+        async function uploadImages() {
+            const mainLoading = document.getElementById('mainLoading');
+            const mainError = document.getElementById('mainError');
+            const submitButton = document.getElementById('submitButton');
+            const resultSection = document.getElementById('resultSection');
+            const resultDiv = document.getElementById('result');
+            const ipadapterWeight = document.getElementById('ipadapter_weight').value.trim();
+
+            resultSection.style.display = 'none';
+            resultDiv.innerHTML = '';
+
+            mainLoading.style.display = 'block';
+            mainError.style.display = 'none';
+            submitButton.disabled = true;
+
+            try {
+                const formData = new FormData();
+                formData.append('img_mask_input', selectedFiles.image1);
+                formData.append('img_material_input', selectedFiles.image2);
+                formData.append('ipadapter_weight', ipadapterWeight);
+
+                const response = await fetch('http://127.0.0.1:8000/api/mask/', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `<img src="data:image/jpeg;base64,${data.image_data}" alt="Generated Result">`;
+                resultSection.style.display = 'block';
+
+            } catch (error) {
+                mainError.textContent = `Error: ${error.message}`;
+                mainError.style.display = 'block';
+            } finally {
+                mainLoading.style.display = 'none';
+                submitButton.disabled = false;
+            }
+        }
+
+        // Initialize file input listeners
+        setupImagePreview(1);
+        setupImagePreview(2);
+    </script>
+</body>
+</html>
