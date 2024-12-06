@@ -5,16 +5,6 @@ import os
 
 @shared_task(bind=True)
 def process_img2img_task(self, img_3d_input_url, img_style_input_url, client_id, promt_text):
-    # Xác định server dựa vào tên worker (Run without docker compose)
-    # worker_name = process_image_task.request.hostname
-    # if 'worker1' in worker_name:
-    #     server_address = '192.168.1.49:8188'
-    # elif 'worker2' in worker_name:
-    #     server_address = '192.168.1.50:8188'
-    # else:
-    #     raise ValueError(f"Worker không xác định: {worker_name}")
-    
-    # RUN ON DOCKER COMPOSE
     server_address = os.getenv('WORKER_SERVER_ADDRESS')
     # try:
     #     # Gọi hàm xử lý
@@ -43,15 +33,14 @@ def process_img2img_task(self, img_3d_input_url, img_style_input_url, client_id,
     return result
 
 @shared_task(bind=True)
-def process_mask_img_task(img_mask_url, img_material_url, client_id, ipadapter_weight):
+def process_mask_img_task(self, img_mask_url, img_material_url, client_id, ipadapter_weight):
     
     server_address = os.getenv('WORKER_SERVER_ADDRESS')
     
-    result = get_mask_result(img_mask_url=img_mask_url,
-                                     img_material_url=img_material_url,
-                                     ipadapter_weight=ipadapter_weight,
-                                     client_id=client_id,
-                                     server_address=server_address
-                                     )
+    result = get_mask_result(   img_mask_url=img_mask_url, 
+                                img_material_url=img_material_url, 
+                                client_id=client_id,
+                                ipadapter_weight=ipadapter_weight,
+                                server_address = server_address )
     
     return result

@@ -8,6 +8,7 @@ import uuid
 from celery.result import AsyncResult
 from django.http import JsonResponse
 from .tasks import process_img2img_task, process_mask_img_task
+from .utils import get_mask_result
 
 # class IMG2IMG(APIView):
 #     parser_classes = (MultiPartParser, FormParser)
@@ -44,15 +45,27 @@ class MASK(APIView):
             img_mask_input_url = request.build_absolute_uri(image_instance.img_mask_input.url)
             img_material_input_url = request.build_absolute_uri(image_instance.img_material_input.url)
             ipadapter_weight = image_instance.ipadapter_weight
+            print(ipadapter_weight)
          
             task = process_mask_img_task.delay(img_mask_url=img_mask_input_url,
                                      img_material_url=img_material_input_url,
-                                     ipadapter_weight=ipadapter_weight,
                                      client_id=client_id,
+                                     ipadapter_weight=ipadapter_weight,                                     
                                      )
             return Response({
                 "task_id": task.id
             }, status=status.HTTP_202_ACCEPTED)
+            # result = get_mask_result(   img_mask_url=img_mask_input_url, 
+            #                             img_material_url=img_material_input_url, 
+            #                             client_id=client_id,
+            #                             ipadapter_weight=ipadapter_weight,
+            #                             server_address = '192.168.1.49:8188' )
+            
+            
+            # # Convert the image to base64
+            # return Response({
+            #     "image_data": result
+            #     }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

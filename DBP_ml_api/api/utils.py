@@ -181,6 +181,7 @@ def get_IMG2IMG_result(img_3d_input_url, img_style_input_url, client_id, server_
     return image_base64_encode(images["181"][-1])
 
 def get_mask_result(img_mask_url, img_material_url, ipadapter_weight, client_id, server_address):
+    print("get_mask_result tasking")
     workflow = load_work_flow(WORKFLOW_MASK_DIR)
     ws = websocket.WebSocket()
     ws.connect("ws://{}/ws?clientId={}".format(server_address, client_id))
