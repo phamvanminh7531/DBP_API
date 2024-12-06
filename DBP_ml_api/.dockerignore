@@ -1,0 +1,16 @@
+# Loại bỏ các tệp không cần thiết
+.git                 # Thư mục Git
+__pycache__/         # Cache Python
+*.pyc                # Tệp bytecode Python
+*.log                # Tệp log
+node_modules/        # Thư mục npm
+
+# Loại bỏ các tệp ảnh
+*.jpg
+*.jpeg
+*.png
+
+# Loại bỏ tệp và thư mục tạm
+*.tmp
+*.swp
+.DS_Store            # Tệp macOS

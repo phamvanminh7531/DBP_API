@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  django:
+    build:
+      context: .
+    container_name: dbp_ml_api
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  celery_worker_1:
+    build:
+      context: .
+    container_name: celery_worker_1
+    command: celery -A project_name worker --loglevel=info --hostname=worker1@%h
+    depends_on:
+      - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - WORKER_SERVER_ADDRESS=192.168.1.49:8188
+
+  celery_worker_2:
+    build:
+      context: .
+    container_name: celery_worker_2
+    command: celery -A project_name worker --loglevel=info --hostname=worker2@%h
+    depends_on:
+      - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - WORKER_SERVER_ADDRESS=192.168.1.50:8188
