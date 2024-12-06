@@ -6,6 +6,7 @@ import os
 @shared_task(bind=True)
 def process_img2img_task(self, img_3d_input_url, img_style_input_url, client_id, promt_text):
     server_address = os.getenv('WORKER_SERVER_ADDRESS')
+    print(server_address)
     # try:
     #     # Gọi hàm xử lý
     #     result = get_IMG2IMG_result(img_3d_input_url=img_3d_input_url, 
@@ -36,6 +37,7 @@ def process_img2img_task(self, img_3d_input_url, img_style_input_url, client_id,
 def process_mask_img_task(self, img_mask_url, img_material_url, client_id, ipadapter_weight):
     
     server_address = os.getenv('WORKER_SERVER_ADDRESS')
+    print(server_address)
     
     result = get_mask_result(   img_mask_url=img_mask_url, 
                                 img_material_url=img_material_url, 
