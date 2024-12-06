@@ -28,7 +28,7 @@ services:
     build:
       context: .
     container_name: celery_worker_1
-    command: celery -A project_name worker --loglevel=info --hostname=worker1@%h
+    command: celery -A DBP_ml_api worker --loglevel=info --hostname=worker1@%h
     depends_on:
       - redis
     environment:
@@ -40,7 +40,7 @@ services:
     build:
       context: .
     container_name: celery_worker_2
-    command: celery -A project_name worker --loglevel=info --hostname=worker2@%h
+    command: celery -A DBP_ml_api worker --loglevel=info --hostname=worker2@%h
     depends_on:
       - redis
     environment:
