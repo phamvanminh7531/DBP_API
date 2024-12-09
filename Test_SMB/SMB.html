@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SMB File Browser</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    #file-browser {
+      margin-top: 20px;
+    }
+    .item {
+      padding: 10px;
+      border: 1px solid #ccc;
+      margin: 5px 0;
+      cursor: pointer;
+    }
+    .item:hover {
+      background-color: #f0f0f0;
+    }
+    .folder {
+      font-weight: bold;
+    }
+    #current-path {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>SMB File Browser</h1>
+
+  <!-- Hiển thị đường dẫn hiện tại -->
+  <div id="current-path">Path: /</div>
+
+  <!-- Hiển thị danh sách file và folder -->
+  <div id="file-browser">
+    <p>Loading...</p>
+  </div>
+
+  <script>
+    const apiEndpoint = "http://127.0.0.1:5000/smb-files";
+
+    let currentPath = "/"; // Đường dẫn hiện tại trên SMB server
+
+    // Lấy danh sách file và folder từ API
+    async function fetchItems(path) {
+      try {
+        const response = await fetch(`${apiEndpoint}?path=${encodeURIComponent(path)}`);
+        if (!response.ok) throw new Error("Failed to fetch items");
+
+        const items = await response.json();
+        displayItems(items, path);
+      } catch (error) {
+        console.error("Error fetching items:", error);
+        document.getElementById("file-browser").innerHTML = "<p>Failed to load items. Please try again later.</p>";
+      }
+    }
+
+    // Hiển thị danh sách file và folder
+    function displayItems(items, path) {
+      const fileBrowser = document.getElementById("file-browser");
+      fileBrowser.innerHTML = ""; // Xóa nội dung cũ
+
+      // Cập nhật đường dẫn hiện tại
+      document.getElementById("current-path").textContent = `Path: ${path}`;
+
+      // Thêm nút "Quay lại" nếu không ở thư mục gốc
+      if (path !== "/") {
+        const backItem = document.createElement("div");
+        backItem.className = "item folder";
+        backItem.textContent = ".. (Go Back)";
+        backItem.onclick = () => {
+          const parentPath = path.slice(0, path.lastIndexOf("/")) || "/";
+          fetchItems(parentPath);
+        };
+        fileBrowser.appendChild(backItem);
+      }
+
+      // Hiển thị thư mục và tệp
+      items.forEach((item) => {
+        const itemDiv = document.createElement("div");
+        itemDiv.className = "item";
+        if (item.isDirectory) {
+          itemDiv.classList.add("folder");
+          itemDiv.textContent = `📁 ${item.name}`;
+          itemDiv.onclick = () => fetchItems(`${path}/${item.name}`.replace(/\/+/g, "/"));
+        } else {
+          itemDiv.textContent = `📄 ${item.name}`;
+          itemDiv.onclick = () => selectFile(`${path}/${item.name}`);
+        }
+        fileBrowser.appendChild(itemDiv);
+      });
+    }
+
+    // Xử lý khi chọn file
+    function selectFile(filePath) {
+      alert(`Selected File: ${filePath}`);
+    }
+
+    // Tải danh sách ban đầu
+    fetchItems(currentPath);
+  </script>
+</body>
+</html>
